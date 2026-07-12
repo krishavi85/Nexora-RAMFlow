@@ -1,0 +1,23 @@
+## .NET and Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+artifacts/
+
+## Build output
+publish/
+*.nupkg
+*.snupkg
+
+## OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Local RAMFlow data
+*.pagefile-backup.json
