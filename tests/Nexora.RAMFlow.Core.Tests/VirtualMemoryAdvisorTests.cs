@@ -1,5 +1,6 @@
 using Nexora.RAMFlow.Core.Models;
 using Nexora.RAMFlow.Core.Services;
+using Xunit;
 
 namespace Nexora.RAMFlow.Core.Tests;
 
