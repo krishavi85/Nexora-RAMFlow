@@ -1,0 +1,87 @@
+name: Windows Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Prepare diagnostics directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path artifacts/logs | Out-Null
+
+      - name: Restore
+        run: dotnet restore Nexora.RAMFlow.sln
+
+      - name: Build
+        id: build
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          dotnet build Nexora.RAMFlow.sln --configuration Release --no-restore *> artifacts/logs/build.log
+          $exitCode = $LASTEXITCODE
+          Get-Content artifacts/logs/build.log
+          exit $exitCode
+
+      - name: Test
+        id: test
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          dotnet test tests/Nexora.RAMFlow.Core.Tests/Nexora.RAMFlow.Core.Tests.csproj --configuration Release --no-build *> artifacts/logs/test.log
+          $exitCode = $LASTEXITCODE
+          Get-Content artifacts/logs/test.log
+          exit $exitCode
+
+      - name: Publish Windows x64
+        id: publish
+        if: steps.build.outcome == 'success' && steps.test.outcome == 'success'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          dotnet publish src/Nexora.RAMFlow.App/Nexora.RAMFlow.App.csproj --configuration Release --runtime win-x64 --self-contained false -p:PublishSingleFile=true --output artifacts/win-x64 *> artifacts/logs/publish.log
+          $exitCode = $LASTEXITCODE
+          Get-Content artifacts/logs/publish.log
+          exit $exitCode
+
+      - name: Upload application artifact
+        if: steps.publish.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexora-RAMFlow-win-x64
+          path: artifacts/win-x64/
+          if-no-files-found: error
+
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexora-RAMFlow-build-logs
+          path: artifacts/logs/
+          if-no-files-found: error
+
+      - name: Fail when build, tests, or publish failed
+        if: always() && (steps.build.outcome == 'failure' || steps.test.outcome == 'failure' || steps.publish.outcome == 'failure')
+        shell: pwsh
+        run: exit 1

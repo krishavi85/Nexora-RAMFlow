@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.RAMFlow.Core", "src\Nexora.RAMFlow.Core\Nexora.RAMFlow.Core.csproj", "{A197F206-6FA0-4F4F-81A6-7516DBEC749A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.RAMFlow.App", "src\Nexora.RAMFlow.App\Nexora.RAMFlow.App.csproj", "{B4B993F6-2C16-46FC-95E0-0B350A4B8FE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.RAMFlow.Core.Tests", "tests\Nexora.RAMFlow.Core.Tests\Nexora.RAMFlow.Core.Tests.csproj", "{CAABBC03-6670-4D1B-933A-895093A34BAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A197F206-6FA0-4F4F-81A6-7516DBEC749A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A197F206-6FA0-4F4F-81A6-7516DBEC749A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A197F206-6FA0-4F4F-81A6-7516DBEC749A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A197F206-6FA0-4F4F-81A6-7516DBEC749A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4B993F6-2C16-46FC-95E0-0B350A4B8FE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B993F6-2C16-46FC-95E0-0B350A4B8FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B993F6-2C16-46FC-95E0-0B350A4B8FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B993F6-2C16-46FC-95E0-0B350A4B8FE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAABBC03-6670-4D1B-933A-895093A34BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAABBC03-6670-4D1B-933A-895093A34BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAABBC03-6670-4D1B-933A-895093A34BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAABBC03-6670-4D1B-933A-895093A34BAE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

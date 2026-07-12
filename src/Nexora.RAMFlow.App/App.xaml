@@ -1,0 +1,34 @@
+<Application x:Class="Nexora.RAMFlow.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="WindowBackground" Color="#0B1020" />
+        <SolidColorBrush x:Key="CardBackground" Color="#151C31" />
+        <SolidColorBrush x:Key="CardBorder" Color="#2B3553" />
+        <SolidColorBrush x:Key="PrimaryText" Color="#F4F7FF" />
+        <SolidColorBrush x:Key="SecondaryText" Color="#AAB5D1" />
+        <SolidColorBrush x:Key="Accent" Color="#7C8CFF" />
+        <SolidColorBrush x:Key="Success" Color="#55D6A6" />
+        <SolidColorBrush x:Key="Warning" Color="#FFCA6A" />
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryText}" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{StaticResource Accent}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="16,9" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="MinWidth" Value="210" />
+        </Style>
+    </Application.Resources>
+</Application>
