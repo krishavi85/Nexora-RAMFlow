@@ -9,42 +9,39 @@ public sealed class PageFileManager
 {
     public Task<PageFileChangeResult> SetSystemManagedAsync() => Task.Run(() =>
     {
-        EnsureAdministrator();
-        var backupPath = BackupCurrentConfiguration();
-
+        string? backupPath = null;
         try
         {
-            using var searcher = new ManagementObjectSearcher("SELECT AutomaticManagedPagefile FROM Win32_ComputerSystem");
-            using var results = searcher.Get();
-            var computer = results.Cast<ManagementObject>().FirstOrDefault()
-                ?? throw new InvalidOperationException("Windows computer settings could not be loaded.");
+            EnsureAdministrator();
+            backupPath = BackupCurrentConfiguration();
+            SetAutomaticManagement(true);
 
-            computer["AutomaticManagedPagefile"] = true;
-            computer.Put();
             return new PageFileChangeResult(true, true,
                 $"Windows system-managed paging has been enabled. Restart Windows to complete the change. Backup: {backupPath}");
         }
         catch (Exception ex)
         {
-            return new PageFileChangeResult(false, false, $"The change failed. The previous configuration backup is at {backupPath}. {ex.Message}");
+            return Failure(ex, backupPath);
         }
     });
 
     public Task<PageFileChangeResult> SetCustomAsync(int initialSizeMegabytes, int maximumSizeMegabytes) => Task.Run(() =>
     {
-        EnsureAdministrator();
-        ValidateSizes(initialSizeMegabytes, maximumSizeMegabytes);
-        ValidateDiskSpace(maximumSizeMegabytes);
-        var backupPath = BackupCurrentConfiguration();
-
+        string? backupPath = null;
         try
         {
-            SetAutomaticManagement(false);
-            var systemPageFile = $"{Path.GetPathRoot(Environment.SystemDirectory)}pagefile.sys";
+            EnsureAdministrator();
+            ValidateSizes(initialSizeMegabytes, maximumSizeMegabytes);
+            ValidateDiskSpace(maximumSizeMegabytes);
+            backupPath = BackupCurrentConfiguration();
+
+            var systemRoot = Path.GetPathRoot(Environment.SystemDirectory)
+                ?? throw new InvalidOperationException("The Windows drive could not be determined.");
+            var systemPageFile = Path.Combine(systemRoot, "pagefile.sys");
 
             using var searcher = new ManagementObjectSearcher("SELECT Name, InitialSize, MaximumSize FROM Win32_PageFileSetting");
             using var results = searcher.Get();
-            var setting = results.Cast<ManagementObject>()
+            ManagementObject? setting = results.Cast<ManagementObject>()
                 .FirstOrDefault(item => string.Equals(Convert.ToString(item["Name"]), systemPageFile, StringComparison.OrdinalIgnoreCase));
 
             if (setting is null)
@@ -61,14 +58,26 @@ public sealed class PageFileManager
                 setting.Put();
             }
 
+            // Keep Windows automatic management enabled until the custom setting has been written successfully.
+            SetAutomaticManagement(false);
+
             return new PageFileChangeResult(true, true,
                 $"The custom page-file profile was saved. Restart Windows to complete the change. Backup: {backupPath}");
         }
         catch (Exception ex)
         {
-            return new PageFileChangeResult(false, false, $"The change failed. The previous configuration backup is at {backupPath}. {ex.Message}");
+            return Failure(ex, backupPath);
         }
     });
+
+    private static PageFileChangeResult Failure(Exception exception, string? backupPath)
+    {
+        var backupMessage = string.IsNullOrWhiteSpace(backupPath)
+            ? "No configuration change was completed."
+            : $"The previous configuration backup is at {backupPath}.";
+
+        return new PageFileChangeResult(false, false, $"The change failed. {backupMessage} {exception.Message}");
+    }
 
     private static void SetAutomaticManagement(bool enabled)
     {
